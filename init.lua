@@ -91,18 +91,20 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
 -- NOTE: You can change these options as you wish!
 --  For more options, you can see `:help option-list`
 
+vim.o.encoding = 'utf-8'
+vim.o.incsearch = true
 -- Make line numbers default
 vim.o.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.o.relativenumber = true
+vim.o.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.o.mouse = 'a'
@@ -120,6 +122,27 @@ end)
 
 -- Enable break indent
 vim.o.breakindent = true
+vim.o.autoindent = true
+vim.o.smartindent = true
+
+-- Autotab
+vim.o.expandtab = true
+-- vim.o.tabstop = 4
+-- vim.o.shiftwidth = 4
+
+---- vim.o.the line to 100 characters.
+---- This can be triggered with manual formatting `gq`
+do
+  local desired_wrap = 100
+  local tmp_wrapmargin = vim.o.columns - desired_wrap
+  if tmp_wrapmargin > 0 then
+    vim.o.wrapmargin = tmp_wrapmargin
+  else
+    vim.o.wrapmargin = 0
+  end
+end
+
+vim.o.foldmethod = 'syntax'
 
 -- Save undo history
 vim.o.undofile = true
@@ -256,6 +279,15 @@ require('lazy').setup({
   -- Use `opts = {}` to automatically pass options to a plugin's `setup()` function, forcing the plugin to be loaded.
   --
 
+  {
+    'dracula/vim',
+    opts = {},
+    config = function()
+      vim.cmd 'silent colorscheme dracula'
+      vim.cmd 'hi StatusLine ctermfg = 179 ctermbg = black' -- LightGoldenRod2 Black
+      vim.cmd 'hi StatusLineNC ctermfg = red ctermbg = black '
+    end,
+  },
   -- Alternatively, use `config = function() ... end` for full control over the configuration.
   -- If you prefer to call `setup` explicitly, use:
   --    {
@@ -423,6 +455,7 @@ require('lazy').setup({
       -- Enable Telescope extensions if they are installed
       pcall(require('telescope').load_extension, 'fzf')
       pcall(require('telescope').load_extension, 'ui-select')
+      require('telescope').load_extension 'file_browser'
 
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
@@ -459,6 +492,16 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sn', function()
         builtin.find_files { cwd = vim.fn.stdpath 'config' }
       end, { desc = '[S]earch [N]eovim files' })
+    end,
+  },
+  -- File Explorer
+  {
+    'nvim-telescope/telescope-file-browser.nvim',
+    dependencies = { 'nvim-telescope/telescope.nvim', 'nvim-lua/plenary.nvim' },
+    config = function()
+      vim.keymap.set('n', '<space>fb', ':Telescope file_browser<CR>')
+      -- open file_browser with the path of the current buffer
+      -- vim.keymap.set('n', '<space>fb', ':Telescope file_browser path=%:p:h select_buffer=true<CR>')
     end,
   },
 
@@ -673,7 +716,9 @@ require('lazy').setup({
       local servers = {
         -- clangd = {},
         -- gopls = {},
-        -- pyright = {},
+        -- mojo = {},
+        -- esbonio = {},
+        pyright = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -770,6 +815,7 @@ require('lazy').setup({
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
+        python = { 'ruff' },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
