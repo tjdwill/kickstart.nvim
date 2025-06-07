@@ -130,7 +130,7 @@ vim.o.expandtab = true
 -- vim.o.tabstop = 4
 -- vim.o.shiftwidth = 4
 
----- vim.o.the line to 100 characters.
+---- Limit lines to 100 characters.
 ---- This can be triggered with manual formatting `gq`
 do
   local desired_wrap = 100
@@ -208,10 +208,10 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 -- TIP: Disable arrow keys in normal mode
--- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
--- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
--- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
--- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
+vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
+vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
+vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
+vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
@@ -281,11 +281,13 @@ require('lazy').setup({
 
   {
     'dracula/vim',
+    name = 'dracula',
+    priority = 1000,
     opts = {},
     config = function()
       vim.cmd 'silent colorscheme dracula'
-      vim.cmd 'hi StatusLine ctermfg = 179 ctermbg = black' -- LightGoldenRod2 Black
-      vim.cmd 'hi StatusLineNC ctermfg = red ctermbg = black '
+      --vim.cmd 'hi StatusLine ctermfg = 179 ctermbg = black' -- LightGoldenRod2 Black
+      --vim.cmd 'hi StatusLineNC ctermfg = red ctermbg = black '
     end,
   },
   -- Alternatively, use `config = function() ... end` for full control over the configuration.
@@ -716,9 +718,7 @@ require('lazy').setup({
       local servers = {
         -- clangd = {},
         -- gopls = {},
-        -- mojo = {},
         -- esbonio = {},
-        pyright = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -728,7 +728,7 @@ require('lazy').setup({
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
         --
-
+        --
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
@@ -743,6 +743,9 @@ require('lazy').setup({
             },
           },
         },
+        marksman = {},
+        -- mojo = {},
+        basedpyright = {},
       }
 
       -- Ensure the servers and tools above are installed
@@ -815,7 +818,13 @@ require('lazy').setup({
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
-        python = { 'ruff' },
+        python = function(bufnr)
+          if require('conform').get_formatter_info('ruff_format', bufnr).available then
+            return { 'ruff_format' }
+          else
+            return { 'isort', 'black' }
+          end
+        end,
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
