@@ -127,8 +127,8 @@ vim.o.smartindent = true
 
 -- Autotab
 vim.o.expandtab = true
--- vim.o.tabstop = 4
--- vim.o.shiftwidth = 4
+vim.o.tabstop = 4 -- How many spaces a <Tab> counts for
+vim.o.shiftwidth = 2 -- How many spaces to use for (auto)indent
 
 ---- Limit lines to 100 characters.
 ---- This can be triggered with manual formatting `gq`
@@ -716,7 +716,7 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- clangd = {},
+        clangd = {},
         -- gopls = {},
         -- esbonio = {},
         -- rust_analyzer = {},
@@ -804,7 +804,7 @@ require('lazy').setup({
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
         -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
+        local disable_filetypes = { c = true }
         if disable_filetypes[vim.bo[bufnr].filetype] then
           return nil
         else
@@ -815,6 +815,7 @@ require('lazy').setup({
         end
       end,
       formatters_by_ft = {
+        cpp = { 'clangd' },
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
@@ -949,7 +950,7 @@ require('lazy').setup({
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
+      -- vim.cmd.colorscheme 'tokyonight-night'
     end,
   },
 
