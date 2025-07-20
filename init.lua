@@ -187,6 +187,18 @@ vim.o.scrolloff = 10
 -- See `:help 'confirm'`
 vim.o.confirm = true
 
+-- Fold Method
+vim.api.nvim_create_autocmd({ 'FileType' }, {
+  callback = function()
+    if require('nvim-treesitter.parsers').has_parser() then
+      vim.opt.foldmethod = 'expr'
+      vim.opt.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+    else
+      vim.opt.foldmethod = 'syntax'
+    end
+  end,
+})
+vim.o.foldenable = false
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -1064,17 +1076,6 @@ require('lazy').setup({
       lazy = '💤 ',
     },
   },
-  -- Fold Method
-  vim.api.nvim_create_autocmd({ 'FileType' }, {
-    callback = function()
-      if require('nvim-treesitter.parsers').has_parser() then
-        vim.opt.foldmethod = 'expr'
-        vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
-      else
-        vim.opt.foldmethod = 'syntax'
-      end
-    end,
-  }),
 })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
