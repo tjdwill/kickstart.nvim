@@ -142,8 +142,6 @@ do
   end
 end
 
-vim.o.foldmethod = 'syntax'
-
 -- Save undo history
 vim.o.undofile = true
 
@@ -1066,6 +1064,17 @@ require('lazy').setup({
       lazy = '💤 ',
     },
   },
+  -- Fold Method
+  vim.api.nvim_create_autocmd({ 'FileType' }, {
+    callback = function()
+      if require('nvim-treesitter.parsers').has_parser() then
+        vim.opt.foldmethod = 'expr'
+        vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
+      else
+        vim.opt.foldmethod = 'syntax'
+      end
+    end,
+  }),
 })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
